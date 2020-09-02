@@ -120,3 +120,38 @@ synchronized (objMonitor){
 ```
 
 在修饰普通方法和静态方法时，只是在方法前修饰了，没有明确的对象。其实三者都有各自的锁对象，只有获取了锁对象，线程才能进入执行里面的代码
+
+- 修饰代码块：锁定锁是synchronized括号里面的对象
+- 修饰普通方法：锁定调用当前方法的this对象
+- 修饰静态方法：锁定当前类的class对象
+
+多个线程之间，如果要通过synchronized保证线程安全，获取的要是同一把锁。如果多线程获取多把锁就会出现线程安全问题
+
+#### 可重入
+
+在一个线程获取到这个锁了，在未释放这把锁之前，还能进入获取锁
+
+```java
+ // 新增objMonitor
+    private Object objMonitor = new Object();
+    
+    public void incrementCount() {
+        // 第一次获取锁
+        synchronized (objMonitor) {
+            for (int i = 0; i < 100000; i++) {
+                count++;
+            }
+        }
+        // 此时线程未terminate，锁未释放
+        getObjMonitorAgain();
+    }
+
+    private void getObjMonitorAgain() {
+        // 再次获取锁，和第一次是同一把
+        synchronized (objMonitor) {
+
+        }
+    }
+```
+
+上面代码出两次调用<u>***synchronized(objMonitor)***</u>获取的是同一把锁
