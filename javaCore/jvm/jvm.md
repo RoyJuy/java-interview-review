@@ -97,5 +97,47 @@ class文件中常量池（编译器生成的字面量和符号引用）会在类
 
 ### finalize()
 
-类似c++的析构函数
+类似c++的析构函数，用于关闭外部资源。但是try-finally等方式可以做的更好，并且该方法运行代价很高，不确定性大，无法保证各个对象的调用顺序，因此最好不要使用。
+
+当一个对象可被回收时，如果需要执行该对象的finalize()方法，那么就有可能在该方法中让对象重新被引用，从而实现自救。自救只能进行一次，结果回收的对象之前调用了finalize()方法自救，后面回收时不会再调用该方法
+
+### 引用类型
+
+无论是通过引用计数算法判断对象的引用数量，还是通过可达性分析算法判断对象是否可达，判定对象是否可被回收都与引用有关。
+
+四种强度不同的引用类型。
+
+1. 强引用
+
+被强引用关联的对象不会被回收
+
+使用new一个新对象的方式来创建强引用
+
+```java
+Object obj = new Object();
+```
+
+2. 软引用
+
+被软引用的对象只有在内存不够的情况下才会被回收
+
+使用SoftReference类来创建软引用
+
+```java
+Object obj = new Object();
+SoftReference<Object> sf = new SoftRefernce<Object>(obj);
+obj = null; // 使对象只被软引用关联
+```
+
+3. 弱引用
+
+被弱引用关联的对象一定会被回收，也就是说它只存活到下一次垃圾回收发生之前。
+
+使用WeakReference类来创建弱引用
+
+```java
+Object obj = new Object();
+WeakReference<Object> wf = new WeakReference<Object>(obj);
+obj = null;
+```
 
